@@ -81,6 +81,7 @@ class Engine {
         $this->loader->register('request', '\app\net\Request');
         $this->loader->register('response', '\app\net\Response');
         $this->loader->register('router', '\app\net\Router');
+        $this->loader->register('fun', '\app\libs\common\Common');
         $this->loader->register('view', '\app\tpl\View', array(), function($view) use ($self) {
             $view->path = $self->get('sys.views.path');
             $view->cache = $self->get('sys.views.cache');
@@ -109,6 +110,7 @@ class Engine {
 
         $this->set(array(
             'web.route' => require __DIR__ . '/config/Router.php',
+            'web.config' => require __DIR__ . '/config/Database.php',
         ));
 
         // Initialization Routing
