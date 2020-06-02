@@ -107,6 +107,13 @@ class Engine {
         $this->set('sys.views.cacheTime', '0');
         $this->set('sys.views.extension', '.php');
 
+        $this->set(array(
+            'web.route' => require __DIR__ . '/config/Router.php',
+        ));
+
+        // Initialization Routing
+        $this->initRoute();
+
         // Startup configuration
         $this->before('start', function() use ($self) {
             // Enable error handling
@@ -120,6 +127,21 @@ class Engine {
         });
 
         $initialized = true;
+    }
+
+    /**
+     * Initialization Routing.
+     *
+     */
+    public function initRoute() {
+        $router = $this->get('web.route');
+        if (is_array($router)) {
+            foreach ($router as $route) {
+                $tmp = explode(':', $route[1]);
+                $class = 'app\\libs\\' . trim(str_replace('/', '\\', $tmp[0]), '\\') . 'Controller';
+                $this->route($route[0], array($class, $tmp[1]));
+            }
+        }
     }
 
     /**
