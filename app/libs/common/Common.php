@@ -5,13 +5,50 @@ use app;
 
 class Common extends app\Engine {
 
+    // XAES加密
+    public function getXTea($data = 'str', $id = 'e') {
+        $this->loader->register('getTea', 'app\libs\common\Tea');
+        $srt = $this->getTea();
+        switch ($id) {
+            case 'e':
+                return str_replace(array('+', '/', '='), array('-', '_', '~'),$this->encrypt(str_replace(array('+', '/', '='), array('-', '_', '~'),$srt->XEncrypt(json_encode($data, JSON_UNESCAPED_UNICODE), md5($this->getKey()))), substr(md5($this->getKey()), 8, 16))); // 加密
+                break;
+            case 'd':
+                return $srt->XDecrypt(str_replace(array('-', '_', '~'), array('+', '/', '='),$this->decrypt(str_replace(array('-', '_', '~'), array('+', '/', '='), $data), substr(md5($this->getKey()), 8, 16))), md5($this->getKey())); // 解密
+                break;
+            default:
+                return 'AES Error: Data not';
+        }
+    }
+
+    /**
+     * @param string $string 需要加密的字符串
+     * @param string $key 密钥
+     * @return string
+     */
+    public function encrypt($string, $key) {
+        // openssl_encrypt 加密不同Mcrypt，对秘钥长度要求，超出16加密结果不变
+        $data = openssl_encrypt($string, 'AES-256-ECB', $key, OPENSSL_RAW_DATA);
+        return base64_encode($data);
+    }
+
+    /**
+     * @param string $string 需要解密的字符串
+     * @param string $key 密钥
+     * @return string
+     */
+    public function decrypt($string, $key) {
+        $decrypted = openssl_decrypt(base64_decode($string), 'AES-256-ECB', $key, OPENSSL_RAW_DATA);
+        return $decrypted;
+    }
+
     // RSA 第三次公共证书
     public function getKey($name = 'public') {
         $config = $this->get('web.config');  // 密钥
         return trim(preg_replace('/[\r\n]/', '',$config[$name.'.third']));
     }
 
-    // RSA加密
+    // RSA 加密, 解密, 签名, 验签
     public function getRSA($id = 're', $data, $sign = false, $third = false) {
         $config = $this->get('web.config');  // 密钥
         $this->loader->register('getRsaSrt', 'app\libs\common\Rsa',array(
