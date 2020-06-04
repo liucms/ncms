@@ -177,6 +177,11 @@ class Rsa {
 
         $partLen = self::getKeyBitDetail($privKey) / 8 - 11;
 
+        if(is_array($data)) {
+            ksort($data);
+            $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+        }
+
         $parts = str_split($data, $partLen);
 
         $encrypted = false;
@@ -223,6 +228,11 @@ class Rsa {
         $pubKey = self::getPublicKey();
 
         $partLen = self::getKeyBitDetail($pubKey) / 8 - 11;
+
+        if(is_array($data)) {
+            ksort($data);
+            $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+        }
 
         $parts = str_split($data, $partLen);
 

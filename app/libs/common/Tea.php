@@ -15,6 +15,12 @@ class Tea {
         if ($str == '') {
             return '';
         }
+
+        if(is_array($str)) {
+            ksort($str);
+            $str = json_encode($str, JSON_UNESCAPED_UNICODE);
+        }
+
         $v = $this->_str2long($str, true);
         $k = $this->_str2long($key, false);
         if (count($k) < 4) {

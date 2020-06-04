@@ -11,7 +11,7 @@ class Common extends app\Engine {
         $srt = $this->getTea();
         switch ($id) {
             case 'e':
-                return str_replace(array('+', '/', '='), array('-', '_', '~'),$this->encrypt(str_replace(array('+', '/', '='), array('-', '_', '~'),$srt->XEncrypt(json_encode($data, JSON_UNESCAPED_UNICODE), md5($this->getKey()))), substr(md5($this->getKey()), 8, 16))); // 加密
+                return str_replace(array('+', '/', '='), array('-', '_', '~'),$this->encrypt(str_replace(array('+', '/', '='), array('-', '_', '~'),$srt->XEncrypt($data, md5($this->getKey()))), substr(md5($this->getKey()), 8, 16))); // 加密
                 break;
             case 'd':
                 return $srt->XDecrypt(str_replace(array('-', '_', '~'), array('+', '/', '='),$this->decrypt(str_replace(array('-', '_', '~'), array('+', '/', '='), $data), substr(md5($this->getKey()), 8, 16))), md5($this->getKey())); // 解密
@@ -48,7 +48,7 @@ class Common extends app\Engine {
         return trim(preg_replace('/[\r\n]/', '',$config[$name.'.third']));
     }
 
-    // RSA 加密, 解密, 签名, 验签
+    // RSA 加密, 解密, 签名, 验签 返回JSON
     public function getRSA($id = 're', $data, $sign = false, $third = false) {
         $config = $this->get('web.config');  // 密钥
         $this->loader->register('getRsaSrt', 'app\libs\common\Rsa',array(
@@ -59,13 +59,13 @@ class Common extends app\Engine {
         $srt = $this->getRsaSrt();
         switch ($id) {
             case 're':
-                return $srt->privEncrypt(json_encode($data, JSON_UNESCAPED_UNICODE)); // 私钥加密
+                return $srt->privEncrypt($data); // 私钥加密
                 break;
             case 'ud':
                 return $srt->publicDecrypt($data); // 公钥解密
                 break;
             case 'ue':
-                return $srt->publicEncrypt(json_encode($data, JSON_UNESCAPED_UNICODE)); // 公钥加密
+                return $srt->publicEncrypt($data); // 公钥加密
                 break;
             case 'rd':
                 return $srt->privDecrypt($data); // 私钥解密
