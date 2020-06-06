@@ -138,10 +138,13 @@ class Engine {
     public function initRoute() {
         $router = $this->get('web.route');
         if (is_array($router)) {
-            foreach ($router as $route) {
-                $tmp = explode(':', $route[1]);
-                $class = 'app\\libs\\' . trim(str_replace('/', '\\', $tmp[0]), '\\') . 'Controller';
-                $this->route($route[0], array($class, $tmp[1]));
+            $auth = explode(',', $router['auth']);
+            foreach ($auth as $value) {
+                foreach ($router[trim($value)] as $route) {
+                    $tmp = explode(':', $route[1]);
+                    $class = 'app\\libs\\' . trim(str_replace('/', '\\', $tmp[0]), '\\') . 'Controller';
+                    $this->route($route[0], array($class, $tmp[1]));
+                }
             }
         }
     }

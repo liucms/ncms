@@ -5,7 +5,7 @@ use app;
 
 class Common extends app\Engine {
 
-    // XAES加密
+    // XAES加密 返回JSON
     public function getXTea($data = 'str', $id = 'e') {
         $this->loader->register('getTea', 'app\libs\common\Tea');
         $srt = $this->getTea();
